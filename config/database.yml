@@ -1,0 +1,103 @@
+# PostgreSQL. Versions 9.3 and up are supported.
+#
+# Install the pg driver:
+#   gem install pg
+# On macOS with Homebrew:
+#   gem install pg -- --with-pg-config=/opt/homebrew/bin/pg_config
+# On Windows:
+#   gem install pg
+#       Choose the win32 build.
+#       Install PostgreSQL and put its /bin directory on your path.
+#
+# Configure Using Gemfile
+# gem "pg"
+#
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  # For details on connection pooling, see Rails configuration guide
+  # https://guides.rubyonrails.org/configuring.html#database-pooling
+  max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  primary:
+    <<: *default
+    database: url_shortener_development
+    username: <%= ENV.fetch("PGUSER", "url_shortener") %>
+    password: <%= ENV.fetch("PGPASSWORD", "url_shortener") %>
+    host: <%= ENV.fetch("PGHOST", "localhost") %>
+    port: <%= ENV.fetch("PGPORT", "5432") %>
+  analytics:
+    adapter: clickhouse
+    database: url_shortener_analytics_development
+    host: <%= ENV.fetch("CLICKHOUSE_HOST", "localhost") %>
+    port: <%= ENV.fetch("CLICKHOUSE_PORT", "8123") %>
+    username: <%= ENV.fetch("CLICKHOUSE_USERNAME", "default") %>
+    password: <%= ENV.fetch("CLICKHOUSE_PASSWORD", "clickhouse") %>
+    migrations_paths: db/clickhouse_migrate
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test:
+  primary:
+    <<: *default
+    database: url_shortener_test
+    username: <%= ENV.fetch("PGUSER", "url_shortener") %>
+    password: <%= ENV.fetch("PGPASSWORD", "url_shortener") %>
+    host: <%= ENV.fetch("PGHOST", "localhost") %>
+    port: <%= ENV.fetch("PGPORT", "5432") %>
+  analytics:
+    adapter: clickhouse
+    database: url_shortener_analytics_test
+    host: <%= ENV.fetch("CLICKHOUSE_HOST", "localhost") %>
+    port: <%= ENV.fetch("CLICKHOUSE_PORT", "8123") %>
+    username: <%= ENV.fetch("CLICKHOUSE_USERNAME", "default") %>
+    password: <%= ENV.fetch("CLICKHOUSE_PASSWORD", "clickhouse") %>
+    migrations_paths: db/clickhouse_migrate
+
+# As with config/credentials.yml, you never want to store sensitive information,
+# like your database password, in your source code.
+#
+# Provide the password or a full connection URL as an environment
+# variable when you boot the app. For example:
+#
+#   DATABASE_URL="postgres://myuser:mypass@localhost/somedatabase"
+#
+# Connection URLs for non-primary databases can also be configured using
+# environment variables. The variable name is formed by concatenating the
+# connection name with `_DATABASE_URL`. For example:
+#
+#   ANALYTICS_DATABASE_URL="http://localhost:8123/url_shortener_analytics_production"
+#
+# Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
+# for a full overview on how database connection configuration can be specified.
+#
+production:
+  primary: &primary_production
+    <<: *default
+    database: url_shortener_production
+    username: url_shortener
+    password: <%= ENV["URL_SHORTENER_DATABASE_PASSWORD"] %>
+    host: <%= ENV.fetch("PGHOST", "localhost") %>
+    port: <%= ENV.fetch("PGPORT", "5432") %>
+  analytics:
+    adapter: clickhouse
+    database: url_shortener_analytics_production
+    host: <%= ENV.fetch("CLICKHOUSE_HOST", "localhost") %>
+    port: <%= ENV.fetch("CLICKHOUSE_PORT", "8123") %>
+    username: <%= ENV["CLICKHOUSE_USERNAME"] %>
+    password: <%= ENV["CLICKHOUSE_PASSWORD"] %>
+    migrations_paths: db/clickhouse_migrate
+  cache:
+    <<: *primary_production
+    database: url_shortener_production_cache
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *primary_production
+    database: url_shortener_production_queue
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *primary_production
+    database: url_shortener_production_cable
+    migrations_paths: db/cable_migrate

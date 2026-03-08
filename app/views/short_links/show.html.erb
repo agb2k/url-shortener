@@ -1,0 +1,32 @@
+<div class="max-w-3xl mx-auto">
+  <h1 class="text-2xl font-bold text-gray-900 mb-6">Short link</h1>
+
+  <% if notice %>
+    <p class="mb-4 p-3 rounded bg-green-100 text-green-800 text-sm"><%= notice %></p>
+  <% end %>
+
+  <%= turbo_stream_from @short_link %>
+
+  <div class="rounded border border-gray-200 p-4 space-y-3 bg-white">
+    <div>
+      <span class="text-xs font-medium text-gray-500 uppercase">Short URL</span>
+      <p class="mt-1">
+        <%= link_to short_link_display_url(@short_link.short_code), short_link_redirect_path(@short_link.short_code), target: "_blank", rel: "noopener", class: "text-blue-600 hover:underline font-mono" %>
+      </p>
+    </div>
+    <div>
+      <span class="text-xs font-medium text-gray-500 uppercase">Original URL</span>
+      <p class="mt-1 text-gray-700 break-all"><%= @short_link.original_url_for_display %></p>
+    </div>
+    <div>
+      <span class="text-xs font-medium text-gray-500 uppercase">Title</span>
+      <p class="mt-1 text-gray-700" id="short_link_<%= @short_link.id %>_title"><%= @short_link.title.presence || "—" %></p>
+    </div>
+  </div>
+
+  <p class="mt-6">
+    <%= link_to "Shorten another", short_links_path, class: "text-blue-600 hover:underline" %>
+    ·
+    <%= link_to "Usage report", stats_path, class: "text-blue-600 hover:underline" %>
+  </p>
+</div>

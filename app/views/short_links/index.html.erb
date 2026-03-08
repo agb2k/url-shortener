@@ -1,0 +1,22 @@
+<div class="max-w-3xl mx-auto">
+  <h1 class="text-2xl font-bold text-gray-900 mb-6">URL Shortener</h1>
+
+  <% if notice %>
+    <p class="mb-4 p-3 rounded bg-green-100 text-green-800 text-sm"><%= notice %></p>
+  <% end %>
+  <% if alert %>
+    <p class="mb-4 p-3 rounded bg-amber-100 text-amber-800 text-sm"><%= alert %></p>
+  <% end %>
+
+  <%= form_with model: @short_link, url: short_links_path, method: :post, local: true, class: "mb-8 flex gap-3 flex-wrap" do |f| %>
+    <%= f.text_field :original_url, placeholder: "Paste long URL (e.g. google.com or https://example.com)", class: "flex-1 min-w-[200px] rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500", required: true %>
+    <%= f.submit "Shorten", class: "rounded bg-blue-600 text-white px-4 py-2 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+    <% if @short_link.errors[:original_url].any? %>
+      <p class="w-full text-red-600 text-sm mt-1"><%= @short_link.errors.full_messages_for(:original_url).first %></p>
+    <% end %>
+  <% end %>
+
+  <p class="mt-6">
+    <%= link_to "Usage report (stats)", stats_path, class: "text-blue-600 hover:underline" %>
+  </p>
+</div>
