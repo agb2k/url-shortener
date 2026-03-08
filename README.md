@@ -144,4 +144,7 @@ The app uses **Redis** (via `REDIS_URL`) for rate limiting and redirect cache wh
 
 ## Deployment
 
-The app is production-ready with the current setup: health check at `/up`, rate limiting on create, Rails.cache (Redis when `REDIS_URL` is set), and background jobs (Solid Queue). Deploy with [Kamal](https://kamal-deploy.org). Before the first deploy, replace the placeholders in [config/deploy.yml](config/deploy.yml): `servers.web` host(s), `registry.server` (and credentials if needed), and `accessories.redis.host` (e.g. same as web server).
+The app is production-ready with the current setup: health check at `/up`, rate limiting on create, Rails.cache (Redis when `REDIS_URL` is set), and background jobs (Solid Queue).
+
+- **Single host (e.g. EC2):** See [DEPLOY.md](DEPLOY.md) for steps using `docker-compose.production.yml` (Postgres, ClickHouse, Redis, and web on one server).
+- **Kamal:** Deploy with [Kamal](https://kamal-deploy.org). Before the first deploy, replace the placeholders in [config/deploy.yml](config/deploy.yml): `servers.web` host(s), `registry.server` (and credentials if needed), and `accessories.redis.host` (e.g. same as web server).
