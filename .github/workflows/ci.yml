@@ -78,6 +78,16 @@ jobs:
           - 5432:5432
         options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
 
+      clickhouse:
+        image: clickhouse/clickhouse-server:24-alpine
+        env:
+          CLICKHOUSE_USER: default
+          CLICKHOUSE_PASSWORD: clickhouse
+          CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+        ports:
+          - 8123:8123
+        options: --health-cmd="wget -q -O- http://localhost:8123/ping" --health-interval=10s --health-timeout=5s --health-retries=5
+
       # redis:
       #   image: valkey/valkey:8
       #   ports:
@@ -100,6 +110,10 @@ jobs:
         env:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432
+          CLICKHOUSE_HOST: localhost
+          CLICKHOUSE_PORT: "8123"
+          CLICKHOUSE_USERNAME: default
+          CLICKHOUSE_PASSWORD: clickhouse
           # RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
           # REDIS_URL: redis://localhost:6379/0
         run: bin/rails db:test:prepare test
@@ -116,6 +130,16 @@ jobs:
         ports:
           - 5432:5432
         options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
+
+      clickhouse:
+        image: clickhouse/clickhouse-server:24-alpine
+        env:
+          CLICKHOUSE_USER: default
+          CLICKHOUSE_PASSWORD: clickhouse
+          CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+        ports:
+          - 8123:8123
+        options: --health-cmd="wget -q -O- http://localhost:8123/ping" --health-interval=10s --health-timeout=5s --health-retries=5
 
       # redis:
       #   image: valkey/valkey:8
@@ -139,6 +163,10 @@ jobs:
         env:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432
+          CLICKHOUSE_HOST: localhost
+          CLICKHOUSE_PORT: "8123"
+          CLICKHOUSE_USERNAME: default
+          CLICKHOUSE_PASSWORD: clickhouse
           # RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
           # REDIS_URL: redis://localhost:6379/0
         run: bin/rails db:test:prepare test:system
