@@ -1,26 +1,22 @@
 # frozen_string_literal: true
 
-# short_code is a temporary placeholder until after_create replaces it with Base62(id).
 class ShortLink < ApplicationRecord
-  PENDING_SHORT_CODE_PREFIX = "pending_"
-
   before_validation :normalize_original_url
+  before_validation :assign_random_short_code, if: -> { short_code.blank? }
   validates :original_url, presence: true
   validate :original_url_must_be_valid
+  validate :original_url_must_not_be_self_referential
   validates :short_code, presence: true, uniqueness: true
-
-  after_create :assign_short_code_from_id, if: :pending_short_code?
 
   def to_param
     short_code
   end
 
-  # Display form: full URL with www. (e.g. https://www.yahoo.com).
   def original_url_for_display
     self.class.url_with_www(original_url)
   end
 
-  # Full form for display: ensure host has www. (e.g. https://www.yahoo.com).
+  # Adds www. to the host when absent (e.g. https://example.com → https://www.example.com).
   def self.url_with_www(url)
     return url if url.blank?
 
@@ -73,11 +69,23 @@ class ShortLink < ApplicationRecord
     errors.add(:original_url, "is not a valid URL")
   end
 
-  def pending_short_code?
-    short_code.to_s.start_with?(PENDING_SHORT_CODE_PREFIX)
+  def original_url_must_not_be_self_referential
+    return if original_url.blank?
+
+    base = ENV["SHORT_URL_BASE"].presence
+    return unless base
+
+    own_host = URI.parse(base).host.to_s.downcase
+    url_host = URI.parse(original_url).host.to_s.downcase
+    errors.add(:original_url, "cannot be a link to this URL shortener") if url_host == own_host
+  rescue URI::InvalidURIError
+    nil
   end
 
-  def assign_short_code_from_id
-    update_column(:short_code, Base62Encoder.encode(id))
+  def assign_random_short_code
+    loop do
+      self.short_code = SecureRandom.alphanumeric(7)
+      break unless self.class.exists?(short_code: short_code)
+    end
   end
 end

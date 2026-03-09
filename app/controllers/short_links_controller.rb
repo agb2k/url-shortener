@@ -13,12 +13,12 @@ class ShortLinksController < ApplicationController
 
   def show
     @short_link = ShortLink.find_by!(short_code: params[:id])
+    @presenter  = ShortLinkPresenter.new(@short_link, helpers)
   end
 
   def create
     link = ShortLink.new(
-      original_url: params.dig(:short_link, :original_url).presence || params[:original_url],
-      short_code: "#{ShortLink::PENDING_SHORT_CODE_PREFIX}#{SecureRandom.hex(8)}"
+      original_url: params.dig(:short_link, :original_url).presence || params[:original_url]
     )
     unless link.valid?
       respond_to do |format|
@@ -78,6 +78,10 @@ class ShortLinksController < ApplicationController
       period: CREATE_RATE_PERIOD
     )
 
-    head :too_many_requests
+    response.set_header("Retry-After", CREATE_RATE_PERIOD.to_i.to_s)
+    respond_to do |format|
+      format.html { head :too_many_requests }
+      format.json { render json: { error: "Too many requests" }, status: :too_many_requests }
+    end
   end
 end

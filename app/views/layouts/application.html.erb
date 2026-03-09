@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Url Shortener" %></title>
+    <title><%= content_for(:title) || "URL Shortener" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Url Shortener">
+    <meta name="application-name" content="URL Shortener">
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -19,8 +19,14 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
+  <body class="bg-gray-50 min-h-screen">
+    <header class="bg-white border-b border-gray-200">
+      <div class="max-w-3xl mx-auto px-5 h-14 flex items-center">
+        <%= link_to "URL Shortener", root_path, class: "font-semibold text-gray-900" %>
+      </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto mt-10 px-5 pb-16">
       <%= yield %>
     </main>
   </body>
