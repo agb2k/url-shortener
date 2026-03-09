@@ -1,0 +1,3 @@
+short-url-agb2k.duckdns.org {
+    reverse_proxy web:3000
+}

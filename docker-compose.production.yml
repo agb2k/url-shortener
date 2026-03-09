@@ -53,8 +53,6 @@ services:
       postgres: { condition: service_healthy }
       clickhouse: { condition: service_healthy }
       redis: { condition: service_healthy }
-    ports:
-      - "80:80"
     env_file:
       - .env.production
     environment:
@@ -64,15 +62,31 @@ services:
       CLICKHOUSE_PORT: "8123"
       CLICKHOUSE_USERNAME: default
       REDIS_URL: redis://redis:6379/0
-      SHORT_URL_BASE: ${SHORT_URL_BASE:-http://localhost}
+      SHORT_URL_BASE: ${SHORT_URL_BASE:-https://short-url-agb2k.duckdns.org}
+      PORT: "3000"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80/up"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000/up"]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 40s
 
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+
 volumes:
   postgres_data:
   clickhouse_data:
   redis_data:
+  caddy_data:
+  caddy_config:
