@@ -29,7 +29,7 @@
                 <%= link_to short_link_display_url(row[:short_link].short_code), short_link_redirect_path(row[:short_link].short_code), target: "_blank", rel: "noopener", class: "text-blue-600 hover:underline font-mono" %>
               </td>
               <td class="px-4 py-2 text-sm text-gray-600 max-w-xs truncate" title="<%= row[:short_link].original_url %>">
-                <%= row[:short_link].original_url %>
+                <%= row[:short_link].original_url.sub(/\Ahttps?:\/\//, "") %>
               </td>
               <td class="px-4 py-2 text-sm font-mono text-gray-700"><%= row[:clicks] %></td>
               <td class="px-4 py-2 text-sm text-gray-600"><%= row[:countries].sort_by { |_, c| -c }.map { |country, count| "#{country} (#{count})" }.join(", ") %></td>
