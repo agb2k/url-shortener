@@ -79,7 +79,7 @@ jobs:
         options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
 
       clickhouse:
-        image: clickhouse/clickhouse-server:24-alpine
+        image: clickhouse/clickhouse-server:24.10-alpine
         env:
           CLICKHOUSE_USER: default
           CLICKHOUSE_PASSWORD: clickhouse
@@ -132,7 +132,7 @@ jobs:
         options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
 
       clickhouse:
-        image: clickhouse/clickhouse-server:24-alpine
+        image: clickhouse/clickhouse-server:24.10-alpine
         env:
           CLICKHOUSE_USER: default
           CLICKHOUSE_PASSWORD: clickhouse
